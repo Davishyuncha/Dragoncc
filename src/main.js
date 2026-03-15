@@ -1,6 +1,7 @@
 // Main Interactivity
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reservationForm');
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxo_Your_Script_ID/exec'; // 구글 앱스 스크립트 배포 후 URL로 교체 필요
     
     if (form) {
         form.addEventListener('submit', (e) => {
@@ -17,14 +18,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 createdAt: new Date().toISOString()
             };
 
-            // localStorage에서 기존 데이터 불러오기 (없으면 빈 배열 참조)
+            // 1. localStorage 저장 (기존 로직 유지)
             const existingReservations = JSON.parse(localStorage.getItem('dragonHillsReservations')) || [];
-            
-            // 새 데이터 추가 및 다시 저장
             existingReservations.push(reservationData);
             localStorage.setItem('dragonHillsReservations', JSON.stringify(existingReservations));
 
-            alert(`${reservationData.guestName}님, 예약 문의가 접수되었습니다!\n담당자가 곧 연락드리겠습니다.`);
+            // 2. Google Sheets 전역 전송
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // CORS 이슈 방지
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(reservationData)
+            }).then(() => {
+                console.log('Google Sheets 전송 완료');
+            }).catch(error => {
+                console.error('API 전송 실패:', error);
+            });
+
+            alert(`${reservationData.guestName}님, 예약 문의가 접수되었습니다!\n데이터가 구글 시트에 안전하게 기록되었습니다.`);
             form.reset();
         });
     }

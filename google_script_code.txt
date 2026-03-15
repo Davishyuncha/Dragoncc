@@ -1,0 +1,57 @@
+function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = sheet.getDataRange().getValues();
+  
+  // 첫 행(헤더) 제외하고 데이터 객체화
+  var headers = data[0];
+  var result = [];
+  
+  for(var i = 1; i < data.length; i++) {
+    var row = data[i];
+    var obj = {};
+    for(var j = 0; j < headers.length; j++) {
+      obj[headers[j]] = row[j];
+    }
+    result.push(obj);
+  }
+  
+  // JSONP 형식 콜백 지원 (CORS 이슈 회피 가능)
+  var callback = e.parameter.callback;
+  if(callback) {
+    return ContentService.createTextOutput(callback + '(' + JSON.stringify(result) + ')').setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  
+  try {
+    // 프론트엔드에서 전송한 JSON 데이터 파싱
+    var postData = JSON.parse(e.postData.contents);
+    
+    // 시트가 비어있다면 헤더 추가
+    if(sheet.getLastRow() === 0) {
+      sheet.appendRow(['id', 'checkinDate', 'checkoutDate', 'guestCount', 'guestName', 'guestPhone', 'createdAt']);
+    }
+    
+    // 데이터 행 추가
+    sheet.appendRow([
+      postData.id,
+      postData.checkinDate,
+      postData.checkoutDate,
+      postData.guestCount,
+      postData.guestName,
+      postData.guestPhone,
+      postData.createdAt
+    ]);
+    
+    return ContentService.createTextOutput(JSON.stringify({"status": "success", "message": "데이터 저장 완료"}))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch(error) {
+    return ContentService.createTextOutput(JSON.stringify({"status": "error", "message": error.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}

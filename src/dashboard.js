@@ -30,6 +30,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    document.getElementById('btnDownloadExcel').addEventListener('click', () => {
+        if (reservations.length === 0) {
+            alert('다운로드할 데이터가 없습니다.');
+            return;
+        }
+
+        // 엑셀 변환을 위한 데이터 가공
+        const excelData = reservations.map(res => ({
+            '접수일시': res.createdAt,
+            '예약자명': res.guestName,
+            '연락처': res.guestPhone,
+            '체크인': res.checkinDate,
+            '체크아웃': res.checkoutDate,
+            '인원수': res.guestCount,
+            '고유ID': res.id
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(excelData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Reservations");
+
+        // 파일 저장 (오늘 날짜 포함)
+        const fileName = `DragonHills_Reservations_${todayStr}.xlsx`;
+        XLSX.writeFile(workbook, fileName);
+    });
+
     // --- 유틸 및 렌더링 함수들 ---
 
     // 로컬 타임존 반영한 YYYY-MM-DD 포맷 변환

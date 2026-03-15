@@ -346,6 +346,19 @@ section {
   font-size: 1rem;
   transition: var(--transition);
   background: #f8fafc;
+  width: 100%;
+}
+
+.form-group input[type="date"] {
+  padding-right: 40px; /* 캘린더 아이콘 공간 확보 */
+  position: relative;
+}
+
+/* 캘린더 아이콘 스타일 최적화 */
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
 }
 
 .form-group input:focus, .form-group select:focus {
@@ -698,8 +711,16 @@ footer {
 @media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
   .reservation-container {
     padding: 40px 20px;
+  }
+  .form-group input, .form-group select {
+    padding: 12px 15px; /* 모바일에서 가로 패딩 축소 */
+    font-size: 16px; /* 모바일 입력창 줌 방지 */
+  }
+  .form-group input[type="date"] {
+    padding-right: 40px;
   }
 }

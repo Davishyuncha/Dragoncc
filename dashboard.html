@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="./src/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body class="dashboard-body">
   <nav class="sidebar">
@@ -101,7 +102,12 @@
     <section class="table-section dashboard-panel">
       <div class="panel-header">
         <h2><i class="fas fa-list"></i> 전체 예약 문의 목록</h2>
-        <button id="btnClearData" class="action-btn outline">테스트 데이터 초기화</button>
+        <div style="display: flex; gap: 10px;">
+          <button id="btnDownloadExcel" class="action-btn" style="background: #1d6f42;">
+            <i class="fas fa-file-excel"></i> 엑셀 다운로드
+          </button>
+          <button id="btnClearData" class="action-btn outline">테스트 데이터 초기화</button>
+        </div>
       </div>
       <div class="table-responsive">
         <table id="reservationsTable">
